@@ -9,7 +9,8 @@ export function useAuth() {
 
   const isAuthenticated = computed(() => authStore.isAuthenticated)
   const user = computed(() => authStore.user)
-  const loading = computed(() => authStore.loading)
+  const userRole = computed(() => authStore.userRole)
+  const userFullName = computed(() => authStore.userFullName)
 
   const login = async (credentials: any) => {
     const result = await authStore.login(credentials)
@@ -39,7 +40,8 @@ export function useAuth() {
   return {
     isAuthenticated,
     user,
-    loading,
+    userRole,
+    userFullName,
     login,
     register,
     logout,

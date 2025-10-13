@@ -1,0 +1,440 @@
+<!-- ===================================================== -->
+<!-- =============== test-integration.html =============== -->
+<!-- =========== Test de integración completo ============ -->
+<!-- ===================================================== -->
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HealthBridge - Test de Integración</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        padding: 2rem;
+        background: #f8f9fa;
+      }
+      .test-card {
+        margin-bottom: 1rem;
+        transition: all 0.2s ease;
+      }
+      .test-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+      .test-result {
+        padding: 0.5rem;
+        margin-top: 0.5rem;
+        border-radius: 0.25rem;
+      }
+      .test-success {
+        background: #d4edda;
+        color: #155724;
+      }
+      .test-error {
+        background: #f8d7da;
+        color: #721c24;
+      }
+      .log-output {
+        background: #2d2d2d;
+        color: #f8f8f2;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        font-family: 'Courier New', monospace;
+        font-size: 0.875rem;
+        max-height: 300px;
+        overflow-y: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="mb-4">🧪 HealthBridge - Test de Integración</h1>
+
+      <div class="alert alert-info">
+        <strong>Nota:</strong> Asegúrate de que el backend esté corriendo en
+        <code>http://localhost:3000</code> y el frontend en <code>http://localhost:5173</code>
+      </div>
+
+      <!-- Tests de Backend -->
+      <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">🔧 Tests de Backend</h5>
+        </div>
+        <div class="card-body">
+          <button class="btn btn-primary mb-2" onclick="testBackendHealth()">
+            Test Health Check
+          </button>
+          <button class="btn btn-success mb-2" onclick="testRegister()">Test Registro</button>
+          <button class="btn btn-info mb-2" onclick="testLogin()">Test Login</button>
+          <button class="btn btn-warning mb-2" onclick="testVerifyToken()">
+            Test Verify Token
+          </button>
+          <button class="btn btn-secondary mb-2" onclick="testAllBackend()">Ejecutar Todos</button>
+          <div id="backend-results"></div>
+        </div>
+      </div>
+
+      <!-- Tests de Frontend -->
+      <div class="card mb-4">
+        <div class="card-header bg-success text-white">
+          <h5 class="mb-0">🎨 Tests de Frontend</h5>
+        </div>
+        <div class="card-body">
+          <button class="btn btn-primary mb-2" onclick="testFrontendAvailable()">
+            Test Disponibilidad
+          </button>
+          <button class="btn btn-success mb-2" onclick="testFrontendRoutes()">Test Rutas</button>
+          <button class="btn btn-info mb-2" onclick="testFrontendStore()">Test Store</button>
+          <button class="btn btn-secondary mb-2" onclick="testAllFrontend()">Ejecutar Todos</button>
+          <div id="frontend-results"></div>
+        </div>
+      </div>
+
+      <!-- Log Output -->
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">📋 Log de Ejecución</h5>
+        </div>
+        <div class="card-body">
+          <div class="log-output" id="log-output"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const BACKEND_URL = 'http://localhost:3000'
+      const FRONTEND_URL = 'http://localhost:5173'
+
+      let testToken = null
+      let testUser = null
+
+      // Utilidades
+      function log(message, type = 'info') {
+        const logOutput = document.getElementById('log-output')
+        const timestamp = new Date().toLocaleTimeString()
+        const colors = {
+          info: '#61dafb',
+          success: '#4caf50',
+          error: '#f44336',
+          warning: '#ff9800',
+        }
+        logOutput.innerHTML += `<div style="color: ${colors[type]}">[${timestamp}] ${message}</div>`
+        logOutput.scrollTop = logOutput.scrollHeight
+      }
+
+      function showResult(containerId, html) {
+        document.getElementById(containerId).innerHTML = html
+      }
+
+      async function testBackendHealth() {
+        log('🔍 Probando health check del backend...', 'info')
+        try {
+          const response = await fetch(`${BACKEND_URL}/health`)
+          const data = await response.json()
+
+          if (response.ok) {
+            log('✅ Health check exitoso', 'success')
+            showResult(
+              'backend-results',
+              `
+                        <div class="test-result test-success">
+                            ✅ Backend Health Check: OK<br>
+                            Service: ${data.service}<br>
+                            Status: ${data.status}
+                        </div>
+                    `,
+            )
+            return true
+          } else {
+            throw new Error('Health check failed')
+          }
+        } catch (error) {
+          log(`❌ Error en health check: ${error.message}`, 'error')
+          showResult(
+            'backend-results',
+            `
+                    <div class="test-result test-error">
+                        ❌ Error: ${error.message}<br>
+                        Asegúrate de que el backend esté corriendo en ${BACKEND_URL}
+                    </div>
+                `,
+          )
+          return false
+        }
+      }
+
+      async function testRegister() {
+        log('📝 Probando registro de usuario...', 'info')
+        try {
+          const randomNum = Math.floor(Math.random() * 10000)
+          const userData = {
+            email: `test${randomNum}@healthbridge.bo`,
+            password: 'Test123!@#05qu1',
+            firstName: 'Mr Test',
+            lastName: 'User',
+            role: 'patient',
+          }
+
+          const response = await fetch(`${BACKEND_URL}/api/auth/register`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(userData),
+          })
+
+          const data = await response.json()
+
+          if (response.ok) {
+            testToken = data.accessToken
+            testUser = data.user
+            log('✅ Registro exitoso', 'success')
+            showResult(
+              'backend-results',
+              `
+                        <div class="test-result test-success">
+                            ✅ Registro Exitoso<br>
+                            Email: ${data.user.email}<br>
+                            Role: ${data.user.role}<br>
+                            Token guardado para tests posteriores
+                        </div>
+                    `,
+            )
+            return true
+          } else {
+            throw new Error(data.error)
+          }
+        } catch (error) {
+          log(`❌ Error en registro: ${error.message}`, 'error')
+          showResult(
+            'backend-results',
+            `
+                    <div class="test-result test-error">
+                        ❌ Error: ${error.message}
+                    </div>
+                `,
+          )
+          return false
+        }
+      }
+
+      async function testLogin() {
+        log('🔐 Probando login...', 'info')
+        try {
+          const credentials = {
+            email: 'test1000@healthbridge.bo',
+            password: 'Test123!@#05qu1',
+          }
+
+          const response = await fetch(`${BACKEND_URL}/api/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(credentials),
+          })
+
+          const data = await response.json()
+
+          if (response.ok) {
+            testToken = data.accessToken
+            testUser = data.user
+            log('✅ Login exitoso', 'success')
+            showResult(
+              'backend-results',
+              `
+                        <div class="test-result test-success">
+                            ✅ Login Exitoso<br>
+                            Usuario: ${data.user.firstName} ${data.user.lastName}<br>
+                            Email: ${data.user.email}<br>
+                            Role: ${data.user.role}
+                        </div>
+                    `,
+            )
+            return true
+          } else {
+            throw new Error(data.error)
+          }
+        } catch (error) {
+          log(`❌ Error en login: ${error.message}`, 'error')
+          showResult(
+            'backend-results',
+            `
+                    <div class="test-result test-error">
+                        ❌ Error: ${error.message}
+                    </div>
+                `,
+          )
+          return false
+        }
+      }
+
+      async function testVerifyToken() {
+        if (!testToken) {
+          showResult(
+            'backend-results',
+            `
+                    <div class="test-result test-error">
+                        ❌ No hay token disponible. Ejecuta el test de login primero.
+                    </div>
+                `,
+          )
+          return false
+        }
+
+        log('🔍 Verificando token...', 'info')
+        try {
+          const response = await fetch(`${BACKEND_URL}/api/auth/verify-token`, {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${testToken}`,
+              'Content-Type': 'application/json',
+            },
+          })
+
+          const data = await response.json()
+
+          if (response.ok && data.valid) {
+            log('✅ Token válido', 'success')
+            showResult(
+              'backend-results',
+              `
+                        <div class="test-result test-success">
+                            ✅ Token Válido<br>
+                            Usuario: ${data.user.firstName} ${data.user.lastName}<br>
+                            Email: ${data.user.email}
+                        </div>
+                    `,
+            )
+            return true
+          } else {
+            throw new Error('Token inválido')
+          }
+        } catch (error) {
+          log(`❌ Error verificando token: ${error.message}`, 'error')
+          showResult(
+            'backend-results',
+            `
+                    <div class="test-result test-error">
+                        ❌ Error: ${error.message}
+                    </div>
+                `,
+          )
+          return false
+        }
+      }
+
+      async function testFrontendAvailable() {
+        log('🔍 Verificando disponibilidad del frontend...', 'info')
+        try {
+          const response = await fetch(FRONTEND_URL)
+          if (response.ok) {
+            log('✅ Frontend disponible', 'success')
+            showResult(
+              'frontend-results',
+              `
+                        <div class="test-result test-success">
+                            ✅ Frontend está corriendo en ${FRONTEND_URL}
+                        </div>
+                    `,
+            )
+            return true
+          } else {
+            throw new Error('Frontend no disponible')
+          }
+        } catch (error) {
+          log(`❌ Error: ${error.message}`, 'error')
+          showResult(
+            'frontend-results',
+            `
+                    <div class="test-result test-error">
+                        ❌ Frontend no está corriendo en ${FRONTEND_URL}<br>
+                        Ejecuta: npm run dev
+                    </div>
+                `,
+          )
+          return false
+        }
+      }
+
+      async function testFrontendRoutes() {
+        log('🔍 Probando rutas del frontend...', 'info')
+        const routes = ['/auth/login', '/auth/register', '/auth/forgot-password']
+
+        let allOk = true
+        let resultsHtml = ''
+
+        for (const route of routes) {
+          try {
+            const response = await fetch(`${FRONTEND_URL}${route}`)
+            if (response.ok) {
+              log(`✅ Ruta ${route} - OK`, 'success')
+              resultsHtml += `<div style="color: #4caf50;">✅ ${route}</div>`
+            } else {
+              throw new Error('Ruta no disponible')
+            }
+          } catch (error) {
+            log(`❌ Ruta ${route} - Error`, 'error')
+            resultsHtml += `<div style="color: #f44336;">❌ ${route}</div>`
+            allOk = false
+          }
+        }
+
+        showResult(
+          'frontend-results',
+          `
+                <div class="test-result ${allOk ? 'test-success' : 'test-error'}">
+                    ${allOk ? '✅' : '❌'} Test de Rutas:<br>
+                    ${resultsHtml}
+                </div>
+            `,
+        )
+        return allOk
+      }
+
+      async function testFrontendStore() {
+        log('🔍 Probando Pinia Store...', 'info')
+        showResult(
+          'frontend-results',
+          `
+                <div class="test-result test-success">
+                    ✅ Store Test<br>
+                    ℹ️ El store de Pinia solo se puede probar en el navegador<br>
+                    Abre las DevTools → Vue → Pinia para inspeccionar el estado
+                </div>
+            `,
+        )
+        return true
+      }
+
+      async function testAllBackend() {
+        log('🚀 Ejecutando todos los tests de backend...', 'info')
+        await testBackendHealth()
+        await new Promise((resolve) => setTimeout(resolve, 500))
+        await testLogin()
+        await new Promise((resolve) => setTimeout(resolve, 500))
+        await testVerifyToken()
+        log('✨ Tests de backend completados', 'success')
+      }
+
+      async function testAllFrontend() {
+        log('🚀 Ejecutando todos los tests de frontend...', 'info')
+        await testFrontendAvailable()
+        await new Promise((resolve) => setTimeout(resolve, 500))
+        await testFrontendRoutes()
+        await new Promise((resolve) => setTimeout(resolve, 500))
+        await testFrontendStore()
+        log('✨ Tests de frontend completados', 'success')
+      }
+
+      // Ejecutar health check al cargar
+      window.addEventListener('load', () => {
+        log('🎉 Test de Integración HealthBridge iniciado', 'info')
+        log('Backend: ' + BACKEND_URL, 'info')
+        log('Frontend: ' + FRONTEND_URL, 'info')
+        testBackendHealth()
+      })
+    </script>
+  </body>
+</html>

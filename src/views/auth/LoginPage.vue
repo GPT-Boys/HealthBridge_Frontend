@@ -79,9 +79,9 @@
           </div>
 
           <!-- Submit Button -->
-          <button type="submit" class="btn btn-primary w-100 mb-3" :disabled="authStore.loading">
-            <span v-if="authStore.loading" class="spinner-border spinner-border-sm me-2"></span>
-            {{ authStore.loading ? 'Iniciando...' : 'Iniciar Sesión' }}
+          <button type="submit" class="btn btn-primary w-100 mb-3" :disabled="appStore.isLoading">
+            <span v-if="appStore.isLoading" class="spinner-border spinner-border-sm me-2"></span>
+            {{ appStore.isLoading ? 'Iniciando...' : 'Iniciar Sesión' }}
           </button>
         </form>
 
@@ -132,10 +132,12 @@
 import { ref, reactive } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useAppStore } from '@/stores/app'
 import { validators } from '@/utils/validators'
 
 const router = useRouter()
 const authStore = useAuthStore()
+const appStore = useAppStore()
 
 const form = reactive({
   email: '',
@@ -173,6 +175,8 @@ const validatePassword = () => {
 }
 
 const handleLogin = async () => {
+  appStore.setLoading(true)
+
   const isEmailValid = validateEmail()
   const isPasswordValid = validatePassword()
 
@@ -188,6 +192,8 @@ const handleLogin = async () => {
   if (result.success) {
     router.push('/dashboard')
   }
+
+  appStore.setLoading(false)
 }
 
 const fillDemoCredentials = (type: 'doctor' | 'patient') => {

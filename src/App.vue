@@ -1,23 +1,33 @@
 <template>
   <div id="app">
-    <LoadingSpinner v-if="loading" fullscreen />
+    <LoadingSpinner v-if="isLoading" fullscreen />
+
     <RouterView v-else />
+
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 11050">
+      <!-- Los toasts se insertarán aquí -->
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, computed } from 'vue'
 import { RouterView } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useAppStore } from '@/stores/app'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 
 const authStore = useAuthStore()
-const loading = ref(true)
+const appStore = useAppStore()
+
+const isLoading = computed(() => appStore.isLoading)
+appStore.setLoading(true)
 
 onMounted(async () => {
   // Inicializar autenticación
   await authStore.initializeAuth()
-  loading.value = false
+  appStore.setLoading(false)
 })
 </script>
 
@@ -43,5 +53,12 @@ body {
 
 #app {
   min-height: 100vh;
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
 }
 </style>

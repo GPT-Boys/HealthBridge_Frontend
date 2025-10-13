@@ -38,7 +38,7 @@ if [ ! -f .env.development ]; then
     echo -e "${BLUE}⚙️  Creando archivo .env.development...${NC}"
     cat > .env.development << 'EOF'
 # API Configuration
-VITE_API_URL=http://localhost:3001
+VITE_API_URL=http://localhost:3000/api
 VITE_API_TIMEOUT=10000
 
 # App Configuration
@@ -94,7 +94,7 @@ EOF
 echo -e "${GREEN}✅ Configuración completada${NC}"
 echo ""
 echo -e "${BLUE}📋 Próximos pasos:${NC}"
-echo "1. Asegúrate de que el backend esté corriendo en http://localhost:3001"
+echo "1. Asegúrate de que el backend esté corriendo en http://localhost:3000"
 echo "2. Ejecuta: npm run dev"
 echo ""
 echo -e "${GREEN}🎉 ¡Listo!${NC}"

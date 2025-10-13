@@ -245,10 +245,10 @@
           <button
             type="submit"
             class="btn btn-primary w-100 mb-3"
-            :disabled="authStore.loading || !isFormValid"
+            :disabled="appStore.isLoading || !isFormValid"
           >
-            <span v-if="authStore.loading" class="spinner-border spinner-border-sm me-2"></span>
-            {{ authStore.loading ? 'Creando cuenta...' : 'Crear Cuenta' }}
+            <span v-if="appStore.isLoading" class="spinner-border spinner-border-sm me-2"></span>
+            {{ appStore.isLoading ? 'Creando cuenta...' : 'Crear Cuenta' }}
           </button>
         </form>
 
@@ -270,10 +270,12 @@
 import { ref, reactive, computed } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useAppStore } from '@/stores/app'
 import { validators } from '@/utils/validators'
 
 const router = useRouter()
 const authStore = useAuthStore()
+const appStore = useAppStore()
 
 const form = reactive({
   email: '',
@@ -452,6 +454,8 @@ const handleRegister = async () => {
     return
   }
 
+  appStore.setLoading(true)
+
   const result = await authStore.register({
     email: form.email,
     password: form.password,
@@ -470,6 +474,8 @@ const handleRegister = async () => {
   if (result.success) {
     router.push('/dashboard')
   }
+
+  appStore.setLoading(false)
 }
 </script>
 

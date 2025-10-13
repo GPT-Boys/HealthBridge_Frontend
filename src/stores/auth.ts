@@ -2,16 +2,15 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { authAPI } from '@/services/authAPI'
+import { useAppStore } from './app'
 import type { User, LoginCredentials, RegisterData } from '@/types/auth.types'
-import Swal from 'sweetalert2'
 
 export const useAuthStore = defineStore('auth', () => {
   // State
   const user = ref<User | null>(null)
   const accessToken = ref<string | null>(localStorage.getItem('accessToken'))
   const refreshToken = ref<string | null>(localStorage.getItem('refreshToken'))
-  const loading = ref(false)
-  const error = ref<string | null>(null)
+  const appStore = useAppStore()
 
   // Computed
   const isAuthenticated = computed(() => !!accessToken.value && !!user.value)
@@ -23,8 +22,8 @@ export const useAuthStore = defineStore('auth', () => {
   // Actions
   const login = async (credentials: LoginCredentials) => {
     try {
-      loading.value = true
-      error.value = null
+      appStore.setLoading(true)
+      appStore.setError(null)
 
       const response = await authAPI.login(credentials)
       const { user: userData, accessToken: token, refreshToken: refresh } = response.data
@@ -39,34 +38,25 @@ export const useAuthStore = defineStore('auth', () => {
       localStorage.setItem('refreshToken', refresh)
       localStorage.setItem('user', JSON.stringify(userData))
 
-      await Swal.fire({
-        icon: 'success',
-        title: '¡Bienvenido!',
-        text: `Hola ${userData.firstName}`,
-        timer: 2000,
-        showConfirmButton: false,
-      })
+      appStore.showToast('¡Bienvenido!', `Hola ${userData.firstName}`, 'success')
 
       return { success: true }
     } catch (err: any) {
-      error.value = err.response?.data?.error || 'Error al iniciar sesión'
+      const error = err.response?.data?.error || 'Error al iniciar sesión'
+      appStore.setError(error)
 
-      await Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: error.value?.toString(),
-      })
+      appStore.showToast('Error', error, 'error')
 
-      return { success: false, error: error.value }
+      return { success: false, error: error }
     } finally {
-      loading.value = false
+      appStore.setLoading(false)
     }
   }
 
   const register = async (data: RegisterData) => {
     try {
-      loading.value = true
-      error.value = null
+      appStore.setLoading(true)
+      appStore.setError(null)
 
       const response = await authAPI.register(data)
       const { user: userData, accessToken: token, refreshToken: refresh } = response.data
@@ -81,27 +71,18 @@ export const useAuthStore = defineStore('auth', () => {
       localStorage.setItem('refreshToken', refresh)
       localStorage.setItem('user', JSON.stringify(userData))
 
-      await Swal.fire({
-        icon: 'success',
-        title: '¡Registro Exitoso!',
-        text: 'Tu cuenta ha sido creada correctamente',
-        timer: 2000,
-        showConfirmButton: false,
-      })
+      appStore.showToast('¡Registro Exitoso!', 'Tu cuenta ha sido creada correctamente', 'success')
 
       return { success: true }
     } catch (err: any) {
-      error.value = err.response?.data?.error || 'Error al registrarse'
+      const error = err.response?.data?.error || 'Error al registrarse'
+      appStore.setError(error)
 
-      await Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: error.value?.toString(),
-      })
+      appStore.showToast('Error', error, 'error')
 
-      return { success: false, error: error.value }
+      return { success: false, error: error }
     } finally {
-      loading.value = false
+      appStore.setLoading(false)
     }
   }
 
@@ -117,20 +98,14 @@ export const useAuthStore = defineStore('auth', () => {
       user.value = null
       accessToken.value = null
       refreshToken.value = null
-      error.value = null
+      appStore.setError(null)
 
       // Limpiar localStorage
       localStorage.removeItem('accessToken')
       localStorage.removeItem('refreshToken')
       localStorage.removeItem('user')
 
-      await Swal.fire({
-        icon: 'info',
-        title: 'Sesión Cerrada',
-        text: 'Has cerrado sesión exitosamente',
-        timer: 2000,
-        showConfirmButton: false,
-      })
+      appStore.showToast('Sesión Cerrada', 'Has cerrado sesión exitosamente', 'info')
     }
   }
 
@@ -209,8 +184,6 @@ export const useAuthStore = defineStore('auth', () => {
     user,
     accessToken,
     refreshToken,
-    loading,
-    error,
 
     // Computed
     isAuthenticated,

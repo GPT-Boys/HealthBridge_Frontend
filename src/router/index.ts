@@ -1,13 +1,35 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useAppStore } from '@/stores/app'
+import NProgress from 'nprogress'
 
 // Layouts
 import AuthLayout from '@/layouts/AuthLayout.vue'
+import DashboardLayout from '@/layouts/DashboardLayout.vue'
+import LandingLayout from '@/layouts/LandingLayout.vue'
 
+// Views
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    redirect: '/auth/login',
+    component: LandingLayout,
+    children: [
+      {
+        path: '',
+        name: 'home',
+        component: () => import('@/views/HomePage.vue'),
+      },
+      {
+        path: 'about',
+        name: 'about',
+        component: () => import('@/views/AboutPage.vue'),
+      },
+      {
+        path: 'services',
+        name: 'services',
+        component: () => import('@/views/ServicesPage.vue'),
+      },
+    ],
   },
   {
     path: '/auth',
@@ -35,10 +57,91 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/dashboard',
-    name: 'dashboard',
-    component: () => import('@/views/DashboardPage.vue'),
+    component: DashboardLayout,
     meta: { requiresAuth: true },
+    children: [
+      {
+        path: '',
+        name: 'dashboard',
+        component: () => import('@/views/dashboard/OverviewPage.vue'),
+      },
+      {
+        path: 'profile',
+        name: 'profile',
+        component: () => import('@/views/dashboard/ProfilePage.vue'),
+      },
+      // Rutas para pacientes
+      // {
+      //   path: 'appointments',
+      //   name: 'appointments',
+      //   component: () => import('@/views/dashboard/appointments/List.vue'),
+      //   meta: { roles: ['patient', 'doctor', 'admin'] },
+      // },
+      // {
+      //   path: 'appointments/new',
+      //   name: 'new-appointment',
+      //   component: () => import('@/views/dashboard/appointments/Create.vue'),
+      //   meta: { roles: ['patient'] },
+      // },
+      // {
+      //   path: 'medical-records',
+      //   name: 'medical-records',
+      //   component: () => import('@/views/dashboard/medical-records/List.vue'),
+      //   meta: { roles: ['patient', 'doctor'] },
+      // },
+      // {
+      //   path: 'medical-records/:id',
+      //   name: 'medical-record-detail',
+      //   component: () => import('@/views/dashboard/medical-records/Detail.vue'),
+      //   meta: { roles: ['patient', 'doctor'] },
+      // },
+      // {
+      //   path: 'billing',
+      //   name: 'billing',
+      //   component: () => import('@/views/dashboard/billing/List.vue'),
+      //   meta: { roles: ['patient', 'admin'] },
+      // },
+      // // Rutas para doctores
+      // {
+      //   path: 'patients',
+      //   name: 'patients',
+      //   component: () => import('@/views/dashboard/patients/List.vue'),
+      //   meta: { roles: ['doctor', 'admin'] },
+      // },
+      // {
+      //   path: 'patients/:id',
+      //   name: 'patient-detail',
+      //   component: () => import('@/views/dashboard/patients/Detail.vue'),
+      //   meta: { roles: ['doctor', 'admin'] },
+      // },
+      // {
+      //   path: 'schedule',
+      //   name: 'schedule',
+      //   component: () => import('@/views/dashboard/schedule/Calendar.vue'),
+      //   meta: { roles: ['doctor'] },
+      // },
+      // // Rutas para admin
+      // {
+      //   path: 'admin/users',
+      //   name: 'admin-users',
+      //   component: () => import('@/views/dashboard/admin/Users.vue'),
+      //   meta: { roles: ['admin'] },
+      // },
+      // {
+      //   path: 'admin/clinics',
+      //   name: 'admin-clinics',
+      //   component: () => import('@/views/dashboard/admin/Clinics.vue'),
+      //   meta: { roles: ['admin'] },
+      // },
+      // {
+      //   path: 'admin/reports',
+      //   name: 'admin-reports',
+      //   component: () => import('@/views/dashboard/admin/Reports.vue'),
+      //   meta: { roles: ['admin'] },
+      // },
+    ],
   },
+  // 404
   {
     path: '/:pathMatch(.*)*',
     name: 'not-found',
@@ -60,7 +163,9 @@ const router = createRouter({
 
 // Navigation guards
 router.beforeEach(async (to, from, next) => {
+  NProgress.start()
   const authStore = useAuthStore()
+  const appStore = useAppStore()
 
   // Verificar autenticación
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
@@ -74,7 +179,25 @@ router.beforeEach(async (to, from, next) => {
     return
   }
 
+  // Verificar roles
+  if (to.meta.roles && authStore.user) {
+    const userRoles = Array.isArray(to.meta.roles) ? to.meta.roles : [to.meta.roles]
+    if (!userRoles.includes(authStore.user.role)) {
+      appStore.showToast(
+        '¡No Autorizado!',
+        'No tienes permisos para acceder a esta página',
+        'error',
+      )
+      next('/dashboard')
+      return
+    }
+  }
+
   next()
+})
+
+router.afterEach(() => {
+  NProgress.done()
 })
 
 export default router

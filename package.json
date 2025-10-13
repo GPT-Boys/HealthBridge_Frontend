@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
+  "description": "HealthBridge Frontend - Vue.js Application",
   "engines": {
     "node": "^20.19.0 || >=22.12.0"
   },
@@ -23,16 +24,23 @@
     "axios": "^1.12.2",
     "bootstrap": "^5.3.8",
     "bootstrap-icons": "^1.13.1",
+    "chart.js": "^4.5.0",
+    "date-fns": "^4.1.0",
+    "nprogress": "^0.2.0",
     "pinia": "^3.0.3",
     "sweetalert2": "^11.23.0",
     "vue": "^3.5.22",
-    "vue-router": "^4.5.1"
+    "vue-chartjs": "^5.3.2",
+    "vue-datepicker-next": "^1.0.3",
+    "vue-router": "^4.5.1",
+    "vue3-perfect-scrollbar": "^2.0.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.55.1",
     "@tsconfig/node22": "^22.0.2",
     "@types/jsdom": "^21.1.7",
     "@types/node": "^22.18.6",
+    "@types/nprogress": "^0.2.3",
     "@typescript-eslint/eslint-plugin": "^8.45.0",
     "@typescript-eslint/parser": "^8.45.0",
     "@vitejs/plugin-vue": "^6.0.1",
