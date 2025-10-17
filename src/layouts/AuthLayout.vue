@@ -1,6 +1,9 @@
 <template>
   <div class="auth-layout">
     <div class="auth-container">
+      <RouterLink to="/" class="back-button">
+        <i class="bi bi-house"></i>
+      </RouterLink>
       <div class="row min-vh-100">
         <!-- Left Side - Branding -->
         <div class="col-md-6 auth-brand-section">
@@ -46,7 +49,7 @@
 </template>
 
 <script setup lang="ts">
-import { RouterView } from 'vue-router'
+import { RouterView, RouterLink } from 'vue-router'
 </script>
 
 <style lang="scss" scoped>
@@ -57,7 +60,8 @@ import { RouterView } from 'vue-router'
 
 .auth-brand-section {
   display: flex;
-  align-items: center;
+  margin-top: 30px;
+  // align-items: center;
   justify-content: center;
   color: white;
   position: relative;
@@ -148,7 +152,7 @@ import { RouterView } from 'vue-router'
 
 .form-container {
   width: 100%;
-  max-width: 400px;
+  // max-width: 400px;
   padding: 2rem;
 }
 

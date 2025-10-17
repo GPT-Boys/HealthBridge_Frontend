@@ -34,10 +34,10 @@
           </ul>
 
           <div class="d-flex">
-            <RouterLink to="/login" class="btn btn-outline-primary me-2"
-              >Inicio de Sesión</RouterLink
-            >
-            <RouterLink to="/register" class="btn btn-primary">Registrarse</RouterLink>
+            <RouterLink to="/auth/login" class="btn btn-outline-primary me-2">
+              Inicio de Sesión
+            </RouterLink>
+            <RouterLink to="/auth/register" class="btn btn-primary">Registrarse</RouterLink>
           </div>
         </div>
       </div>
@@ -45,7 +45,7 @@
 
     <!-- Main Content -->
     <main class="main-content">
-      <slot></slot>
+      <RouterView />
     </main>
 
     <!-- Footer -->
@@ -66,7 +66,7 @@
 </template>
 
 <script setup lang="ts">
-import { RouterLink } from 'vue-router'
+import { RouterLink, RouterView } from 'vue-router'
 </script>
 
 <style scoped>

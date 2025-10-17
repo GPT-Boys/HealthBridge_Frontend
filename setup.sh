@@ -52,8 +52,10 @@ EOF
     echo -e "${GREEN}✅ Archivo .env.development creado${NC}"
 fi
 
-# Crear .gitignore
-cat > .gitignore << 'EOF'
+# Crear .gitignore si no existe
+if [ ! -f ".gitignore" ]; then
+    echo "⚙️  Creando archivo .gitignore..."
+    cat > .gitignore << 'EOF'
 # Dependencies
 node_modules
 .pnp

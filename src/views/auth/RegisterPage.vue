@@ -144,7 +144,7 @@
                 class="form-control"
                 :class="{ 'is-invalid': formErrors.password }"
                 v-model="form.password"
-                placeholder="Mínimo 8 caracteres"
+                placeholder="Mínimo 12 caracteres"
                 @input="checkPasswordStrength"
                 @blur="validatePassword"
                 required

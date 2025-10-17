@@ -17,17 +17,22 @@ const routes: RouteRecordRaw[] = [
       {
         path: '',
         name: 'home',
-        component: () => import('@/views/HomePage.vue'),
-      },
-      {
-        path: 'about',
-        name: 'about',
-        component: () => import('@/views/AboutPage.vue'),
+        component: () => import('@/views/common/HomePage.vue'),
       },
       {
         path: 'services',
         name: 'services',
-        component: () => import('@/views/ServicesPage.vue'),
+        component: () => import('@/views/common/ServicesPage.vue'),
+      },
+      {
+        path: 'about',
+        name: 'about',
+        component: () => import('@/views/common/AboutPage.vue'),
+      },
+      {
+        path: 'contact',
+        name: 'contact',
+        component: () => import('@/views/common/ContactPage.vue'),
       },
     ],
   },
@@ -145,7 +150,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/:pathMatch(.*)*',
     name: 'not-found',
-    component: () => import('@/views/NotFoundPage.vue'),
+    component: () => import('@/views/common/NotFoundPage.vue'),
   },
 ]
 

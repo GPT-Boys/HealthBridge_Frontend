@@ -26,6 +26,7 @@ if [ "$response" -eq 200 ]; then
     echo "   ${API_URL}/"
     echo "   ${API_URL}/about"
     echo "   ${API_URL}/services"
+    echo "   ${API_URL}/contact"
     echo "   ${API_URL}/auth/login"
     echo "   ${API_URL}/auth/register"
     echo "   ${API_URL}/auth/forgot-password"
