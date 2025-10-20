@@ -67,6 +67,7 @@ export const formatters = {
       completed: 'Completada',
       cancelled: 'Cancelada',
       no_show: 'No asistió',
+      rescheduled: 'Reprogramada',
     }
     return statusMap[status] || status
   },
@@ -80,6 +81,7 @@ export const formatters = {
       completed: 'text-success',
       cancelled: 'text-danger',
       no_show: 'text-muted',
+      rescheduled: 'text-secondary',
     }
     return classMap[status] || 'text-secondary'
   },
