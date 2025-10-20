@@ -8,6 +8,9 @@ import AuthLayout from '@/layouts/AuthLayout.vue'
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import LandingLayout from '@/layouts/LandingLayout.vue'
 
+// Routes
+import { subscriptionRoutes } from './subscription.routes'
+
 // Views
 const routes: RouteRecordRaw[] = [
   {
@@ -146,6 +149,7 @@ const routes: RouteRecordRaw[] = [
       // },
     ],
   },
+  ...subscriptionRoutes,
   // 404
   {
     path: '/:pathMatch(.*)*',
