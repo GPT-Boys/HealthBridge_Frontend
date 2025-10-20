@@ -1,0 +1,89 @@
+version: '3.8'
+
+services:
+  # Frontend Development Service
+  frontend-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    ports:
+      - '5173:5173'
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    networks:
+      - healthbridge-network
+    profiles:
+      - dev
+
+  # Frontend Production Service
+  frontend-prod:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    ports:
+      - '80:80'
+    environment:
+      - NODE_ENV=production
+    networks:
+      - healthbridge-network
+    profiles:
+      - prod
+
+  # Backend Service (placeholder - adjust according to your backend)
+  backend:
+    image: node:22-alpine
+    working_dir: /app
+    ports:
+      - '3000:3000'
+    volumes:
+      - ../HealthBridge_Backend:/app
+    command: sh -c "npm install && npm start"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    networks:
+      - healthbridge-network
+    profiles:
+      - prod
+      - dev
+
+  # Database Service (placeholder - adjust according to your database)
+  database:
+    image: mongo:7.0
+    container_name: HB_auth-service_mongodb_dev
+    restart: always
+    ports:
+      - '27017:27017'
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password123
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - healthbridge-network
+
+  # Redis Service (for caching/sessions)
+  redis:
+    image: redis:7-alpine
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+    networks:
+      - healthbridge-network
+    profiles:
+      - prod
+      - dev
+
+volumes:
+  mongodb_data:
+  redis_data:
+
+networks:
+  healthbridge-network:
+    driver: bridge

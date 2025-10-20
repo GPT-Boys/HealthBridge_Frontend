@@ -18,14 +18,15 @@
       </div>
 
       <!-- Loading State -->
-      <div v-if="subscriptionStore.loading" class="text-center py-5">
+      <!-- <div v-if="subscriptionStore.loading" class="text-center py-5">
         <div class="spinner-border text-primary" role="status">
           <span class="visually-hidden">Cargando...</span>
         </div>
-      </div>
+      </div> -->
 
       <!-- Main Content -->
-      <div v-else class="row justify-content-center">
+      <!-- v-else -->
+      <div class="row justify-content-center">
         <div class="col-lg-8">
           <!-- Current Subscription Info -->
           <div class="card mb-4">
