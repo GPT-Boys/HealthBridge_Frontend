@@ -105,7 +105,7 @@ Create a `.env` file in the project root:
 ```env
 # Frontend
 NODE_ENV=development
-VITE_API_URL=http://localhost:3000/api
+VITE_API_URL=http://localhost:3000
 
 # Backend
 PORT=3000

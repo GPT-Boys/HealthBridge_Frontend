@@ -38,8 +38,8 @@ if [ ! -f .env.development ]; then
     echo -e "${BLUE}⚙️  Creando archivo .env.development...${NC}"
     cat > .env.development << 'EOF'
 # API Configuration
-VITE_API_URL=http://localhost:3000/api
-VITE_API_TIMEOUT=10000
+VITE_API_URL=http://localhost:3000
+VITE_API_TIMEOUT=30000
 
 # App Configuration
 VITE_APP_NAME=HealthBridge

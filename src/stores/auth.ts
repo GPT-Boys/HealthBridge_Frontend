@@ -26,6 +26,7 @@ export const useAuthStore = defineStore('auth', () => {
       appStore.setError(null)
 
       const response = await authAPI.login(credentials)
+      console.log(response.data)
       const { user: userData, accessToken: token, refreshToken: refresh } = response.data
 
       // Guardar en state
@@ -43,6 +44,7 @@ export const useAuthStore = defineStore('auth', () => {
       return { success: true }
     } catch (err: any) {
       const error = err.response?.data?.error || 'Error al iniciar sesión'
+      console.log(err)
       appStore.setError(error)
 
       appStore.showToast('Error', error, 'error')

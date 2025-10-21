@@ -41,7 +41,7 @@ Edita `.env` con tus valores:
 
 ```env
 VITE_API_URL=http://localhost:3001
-VITE_API_TIMEOUT=10000
+VITE_API_TIMEOUT=30000
 ```
 
 ## 🏃 Ejecución

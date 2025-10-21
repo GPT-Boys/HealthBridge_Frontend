@@ -47,7 +47,7 @@ if [ ! -f ".env" ]; then
 # HealthBridge Frontend Environment Variables
 
 # API Configuration
-VITE_API_URL=http://localhost:3000/api
+VITE_API_URL=http://localhost:3000
 VITE_WS_URL=ws://localhost:3000
 
 # App Configuration
@@ -77,7 +77,7 @@ echo "🎨 Iniciando servidor de desarrollo..."
 echo ""
 echo "📋 Información del servidor:"
 echo "   🌐 Frontend URL: http://localhost:5173"
-echo "   🔗 API URL: http://localhost:3000/api"
+echo "   🔗 API URL: http://localhost:3000"
 echo "   📱 Red local disponible"
 echo ""
 echo "💡 Comandos útiles:"
