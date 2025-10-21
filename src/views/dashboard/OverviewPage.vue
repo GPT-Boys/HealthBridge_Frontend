@@ -347,7 +347,7 @@ const loadDashboardData = async () => {
     const appointmentsData = await execute(() =>
       appointmentAPI.getAppointments({
         limit: 5,
-        status: authStore.hasRole('patient') ? 'scheduled,confirmed' : undefined,
+        status: authStore.hasRole('patient') ? ['scheduled', 'confirmed'] : undefined,
       }),
     )
 

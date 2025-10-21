@@ -78,19 +78,25 @@ const routes: RouteRecordRaw[] = [
         name: 'profile',
         component: () => import('@/views/dashboard/ProfilePage.vue'),
       },
-      // Rutas para pacientes
-      // {
-      //   path: 'appointments',
-      //   name: 'appointments',
-      //   component: () => import('@/views/dashboard/appointments/List.vue'),
-      //   meta: { roles: ['patient', 'doctor', 'admin'] },
-      // },
-      // {
-      //   path: 'appointments/new',
-      //   name: 'new-appointment',
-      //   component: () => import('@/views/dashboard/appointments/Create.vue'),
-      //   meta: { roles: ['patient'] },
-      // },
+      // Appointments
+      {
+        path: 'appointments',
+        name: 'appointments',
+        component: () => import('@/views/dashboard/appointments/List.vue'),
+        meta: { roles: ['patient', 'doctor', 'admin'] },
+      },
+      {
+        path: 'appointments/new',
+        name: 'new-appointment',
+        component: () => import('@/views/dashboard/appointments/Create.vue'),
+        meta: { roles: ['patient'] },
+      },
+      {
+        path: 'appointments/:id',
+        name: 'appointment-detail',
+        component: () => import('@/views/dashboard/appointments/Detail.vue'),
+        meta: { roles: ['patient', 'doctor', 'admin'] },
+      },
       // {
       //   path: 'medical-records',
       //   name: 'medical-records',
@@ -103,12 +109,18 @@ const routes: RouteRecordRaw[] = [
       //   component: () => import('@/views/dashboard/medical-records/Detail.vue'),
       //   meta: { roles: ['patient', 'doctor'] },
       // },
-      // {
-      //   path: 'billing',
-      //   name: 'billing',
-      //   component: () => import('@/views/dashboard/billing/List.vue'),
-      //   meta: { roles: ['patient', 'admin'] },
-      // },
+      {
+        path: 'billing',
+        name: 'billing',
+        component: () => import('@/views/dashboard/billing/List.vue'),
+        meta: { roles: ['patient', 'admin', 'doctor'] },
+      },
+      {
+        path: 'billing/invoices/:id',
+        name: 'invoice-detail',
+        component: () => import('@/views/dashboard/billing/Detail.vue'),
+        meta: { roles: ['patient', 'admin', 'doctor'] },
+      },
       // // Rutas para doctores
       // {
       //   path: 'patients',
