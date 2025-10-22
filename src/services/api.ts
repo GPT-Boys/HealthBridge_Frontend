@@ -2,7 +2,7 @@ import axios, { type AxiosInstance, AxiosError, type InternalAxiosRequestConfig 
 import { useAuthStore } from '@/stores/auth'
 import { useAppStore } from '@/stores/app'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+const API_URL = import.meta.env.VITE_API_URL || '/api'
 const API_TIMEOUT = parseInt(import.meta.env.VITE_API_TIMEOUT || '30000')
 
 // Crear instancia de Axios

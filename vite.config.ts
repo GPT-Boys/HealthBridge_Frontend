@@ -13,6 +13,7 @@ export default defineConfig(({ mode }) => {
   const APPOINTMENTS_TARGET = env.VITE_APPOINTMENT_SERVICE_TARGET || 'http://localhost:3003'
   const NOTIFICATION_TARGET = env.VITE_NOTIFICATION_SERVICE_TARGET || 'http://localhost:3004'
   const BILLING_TARGET = env.VITE_BILLING_SERVICE_TARGET || 'http://localhost:3006'
+  const SUBSCRIPTION_TARGET = env.VITE_SUBSCRIPTION_SERVICE_TARGET || 'http://localhost:3007'
 
   return {
     plugins: [vue(), vueDevTools()],
@@ -63,6 +64,10 @@ export default defineConfig(({ mode }) => {
         },
         '/api/reports': {
           target: BILLING_TARGET,
+          changeOrigin: true,
+        },
+        '/api/subscription': {
+          target: SUBSCRIPTION_TARGET,
           changeOrigin: true,
         },
       },
