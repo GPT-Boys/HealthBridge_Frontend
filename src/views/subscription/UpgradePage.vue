@@ -167,94 +167,33 @@ import { useRouter } from 'vue-router'
 import PlanCard from '@/components/subscription/PlanCard.vue'
 import { useSubscriptionStore } from '@/stores/subscription'
 import type { Plan } from '@/types/subscription.types'
-import { PlanType } from '@/types/subscription.types'
 
 const router = useRouter()
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-let subscriptionStore: any = null
-try {
-  subscriptionStore = useSubscriptionStore()
-} catch {
-  // fallback minimal store-like object if actual store not available during standalone editing
-  subscriptionStore = {
-    currentPlan: null,
-    loading: false,
-    async upgradeToPlan(_: string) {
-      console.log(_)
-      return { success: true }
-    },
-  }
-}
+const subscriptionStore = useSubscriptionStore()
 
-const plans = ref<Plan[]>([])
 const loadingPlans = ref(false)
 const processingId = ref<string | null>(null)
 const error = ref<string | null>(null)
 const statusMessage = ref('')
 
 const upgradePlans = computed(() => {
-  if (!plans.value || plans.value.length === 0) return []
-  const currentId = subscriptionStore?.currentPlan?._id
-  return plans.value.filter((p) => p._id !== currentId)
+  const plans = subscriptionStore.plans
+  if (!plans || plans.length === 0) return []
+  const currentType = subscriptionStore.currentSubscription?.planType
+  return plans.filter((p) => p.type !== currentType)
 })
 
 function isCurrentPlan(plan: Plan) {
-  return subscriptionStore?.currentPlan && subscriptionStore.currentPlan._id === plan._id
+  return subscriptionStore.currentSubscription?.planType === plan.type
 }
 
 async function fetchPlans() {
   loadingPlans.value = true
   error.value = null
   try {
-    // Prefer store action if available
-    if (typeof subscriptionStore.fetchAvailablePlans === 'function') {
-      plans.value = await subscriptionStore.fetchAvailablePlans()
-      return
-    }
-
-    // Generic fetch fallback - adjust endpoint to your API
-    const res = await fetch('/api/plans')
-    if (!res.ok) throw new Error('No se pudieron cargar los planes')
-    plans.value = await res.json()
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (err: any) {
-    // fallback to a minimal set of example plans so the view remains usable
-    plans.value = [
-      {
-        _id: 'basic',
-        name: 'Basic',
-        price: 0,
-        currency: 'USD',
-        type: PlanType.BASIC,
-        billingPeriod: 'monthly',
-        features: ['Funcionalidad básica'],
-        limits: { appointments: 10, storage: 100, filesPerRecord: 5 },
-        isActive: true,
-      },
-      {
-        _id: 'premium',
-        name: 'Premium',
-        price: 1999,
-        currency: 'USD',
-        type: PlanType.PREMIUM,
-        billingPeriod: 'monthly',
-        features: ['Mejor rendimiento y soporte'],
-        limits: { appointments: 50, storage: 500, filesPerRecord: 20 },
-        isActive: true,
-      },
-      {
-        _id: 'enterprise',
-        name: 'Enterprise',
-        price: 4999,
-        currency: 'USD',
-        type: PlanType.ENTERPRISE,
-        billingPeriod: 'monthly',
-        features: ['Solución para organizaciones'],
-        limits: { appointments: -1, storage: -1, filesPerRecord: -1 },
-        isActive: true,
-      },
-    ]
-    error.value = err?.message || 'Error cargando planes, mostrando opciones básicas.'
+    await subscriptionStore.fetchPlans()
+  } catch (err: unknown) {
+    error.value = (err as Error)?.message || 'Error cargando planes'
   } finally {
     loadingPlans.value = false
   }
@@ -265,38 +204,30 @@ async function handleUpgrade(plan: Plan) {
   processingId.value = plan._id
   statusMessage.value = `Iniciando actualización al plan ${plan.name}`
   try {
-    // If store provides upgrade flow, prefer it
-    if (typeof subscriptionStore.upgradeToPlan === 'function') {
-      const result = await subscriptionStore.upgradeToPlan(plan._id)
-      if (result && result.success) {
-        statusMessage.value = `Actualización a ${plan.name} iniciada`
-        // optionally navigate to billing/checkout if returned url
-        if (result.checkoutUrl) {
-          window.location.href = result.checkoutUrl
-          return
-        }
-        // refresh store or navigate to subscription page
-        if (typeof subscriptionStore.refresh === 'function') await subscriptionStore.refresh()
-        router.push({ name: 'SubscriptionOverview' }).catch(() => {})
-        return
-      } else {
-        throw new Error(result?.message || 'No se pudo iniciar la actualización')
-      }
+    await subscriptionStore.upgrade(plan.type)
+
+    // Si el plan requiere pago y hay priceId, crear checkout session
+    if (plan.price > 0 && plan.stripePriceId) {
+      await subscriptionStore.createCheckoutSession(plan.stripePriceId)
+      return
     }
 
-    // Generic upgrade: redirect to a checkout route with plan id
-    router.push({ name: 'Checkout', query: { plan: plan._id } })
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (err: any) {
-    error.value = err?.message || 'Error al intentar actualizar el plan'
+    // Si no requiere pago, ir a éxito o a mi suscripción
+    router.push({ name: 'subscription-success' }).catch(() => {})
+  } catch (err: unknown) {
+    error.value = (err as Error)?.message || 'Error al intentar actualizar el plan'
     statusMessage.value = error.value ?? ''
   } finally {
     processingId.value = null
   }
 }
 
-onMounted(() => {
-  fetchPlans()
+onMounted(async () => {
+  await fetchPlans()
+  // Asegurar tener la suscripción actual para filtrar correctamente
+  if (!subscriptionStore.currentSubscription) {
+    await subscriptionStore.fetchMySubscription().catch(() => {})
+  }
 })
 </script>
 

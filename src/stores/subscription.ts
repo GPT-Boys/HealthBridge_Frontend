@@ -115,10 +115,10 @@ export const useSubscriptionStore = defineStore('subscription', () => {
     }
   }
 
-  const cancel = async (reason?: string) => {
+  const cancel = async (reason?: string, feedback?: string) => {
     try {
       appStore.setLoading(true)
-      await subscriptionAPI.cancelSubscription(reason)
+      await subscriptionAPI.cancelSubscription(reason, feedback)
       appStore.showToast('Suscripción cancelada', 'info')
       await fetchMySubscription()
     } catch (error: any) {

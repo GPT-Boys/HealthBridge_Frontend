@@ -1,23 +1,6 @@
-export interface User {
-  id: string
-  email: string
-  firstName: string
-  lastName: string
-  role: 'admin' | 'doctor' | 'patient'
-  profile?: UserProfile
-  isEmailVerified?: boolean
-  createdAt?: string
-}
-
-export interface UserProfile {
-  phone?: string
-  address?: string
-  birthDate?: string
-  gender?: 'male' | 'female' | 'other'
-  specialization?: string
-  licenseNumber?: string
-  avatar?: string
-}
+// Re-exportar tipos de user.types para mantener compatibilidad
+export type { User, UserProfile, UserRole, Gender } from './user.types'
+import type { User, UserProfile } from './user.types'
 
 export interface LoginCredentials {
   email: string

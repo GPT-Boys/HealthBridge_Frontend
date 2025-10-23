@@ -22,6 +22,9 @@
         <button class="btn btn-success" @click="confirm" :disabled="loading">
           Confirmar
         </button>
+        <button class="btn btn-outline-primary" @click="sendReminder" :disabled="loading">
+          Enviar recordatorio
+        </button>
         <button class="btn btn-primary" @click="completeAndInvoice" :disabled="loading">
           Completar y Facturar
         </button>
@@ -81,6 +84,7 @@ import { useApi } from '@/composables/useApi'
 import { formatters } from '@/utils/formatters'
 import { useAppStore } from '@/stores/app'
 import { invoicesAPI } from '@/services/billingAPI'
+import { notificationAPI } from '@/services/notificationAPI'
 
 const route = useRoute()
 const router = useRouter()
@@ -163,6 +167,17 @@ const completeAndInvoice = async () => {
   // 2) Crear factura desde la cita
   await execute(() => invoicesAPI.createFromAppointment(appointment.value!.id))
   appStore.showToast('Facturación', 'Factura creada automáticamente.', 'success')
+}
+
+const sendReminder = async () => {
+  if (!appointment.value) return
+  // Enviar evento asíncrono de recordatorio vía Notification Service
+  const payload = {
+    patientId: appointment.value.patientId,
+    appointmentDate: appointment.value.startTime,
+  }
+  await execute(() => notificationAPI.send('appointment_reminder', payload))
+  appStore.showToast('Notificación', 'Recordatorio enviado', 'success')
 }
 </script>
 

@@ -53,7 +53,7 @@
               <tr>
                 <td>Almacenamiento</td>
                 <td class="text-center">100MB</td>
-                <td class="text-center">1GB</td>
+                <td class="text-center">500MB</td>
                 <td class="text-center">Ilimitado</td>
               </tr>
               <tr>

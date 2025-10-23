@@ -108,38 +108,7 @@
 
         <div class="nav-right">
           <!-- Notifications -->
-          <div class="nav-item dropdown">
-            <button class="btn btn-link nav-button dropdown-toggle" data-bs-toggle="dropdown">
-              <i class="bi bi-bell"></i>
-              <span class="notification-badge" v-if="appStore.getUnreadCount() > 0">
-                {{ appStore.getUnreadCount() }}
-              </span>
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end notifications-dropdown">
-              <li class="dropdown-header">Notificaciones</li>
-              <li
-                v-if="appStore.notifications.length === 0"
-                class="dropdown-item text-center text-muted"
-              >
-                No hay notificaciones
-              </li>
-              <li
-                v-for="notification in appStore.notifications.slice(0, 5)"
-                :key="notification.id"
-                class="dropdown-item notification-item"
-                :class="{ unread: !notification.isRead }"
-                @click="markAsRead(notification.id)"
-              >
-                <div class="notification-content">
-                  <div class="notification-title">{{ notification.title }}</div>
-                  <div class="notification-message">{{ notification.message }}</div>
-                  <div class="notification-time">
-                    {{ formatters.formatTime(notification.createdAt) }}
-                  </div>
-                </div>
-              </li>
-            </ul>
-          </div>
+          <NotificationBell />
 
           <!-- User Menu -->
           <div class="nav-item dropdown">
@@ -180,8 +149,7 @@
 import { RouterView, RouterLink, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useAppStore } from '@/stores/app'
-import { formatters } from '@/utils/formatters'
-import { notificationAPI } from '@/services/notificationAPI'
+import NotificationBell from '@/components/notifications/NotificationBell.vue'
 
 const authStore = useAuthStore()
 const appStore = useAppStore()
@@ -197,15 +165,6 @@ const logout = async () => {
   if (confirm) {
     authStore.logout()
     router.push('/auth/login')
-  }
-}
-
-const markAsRead = async (notificationId: string) => {
-  try {
-    await notificationAPI.markAsRead(notificationId)
-    appStore.markNotificationAsRead(notificationId)
-  } catch (error) {
-    console.error('Error marcando notificación como leída:', error)
   }
 }
 </script>
@@ -351,61 +310,8 @@ const markAsRead = async (notificationId: string) => {
   }
 }
 
-.notification-badge {
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  background: #ff6b6b;
-  color: white;
-  border-radius: 50%;
-  font-size: 0.7rem;
-  min-width: 18px;
-  height: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 .user-avatar {
   font-size: 1.5rem;
-}
-
-.notifications-dropdown {
-  width: 350px;
-  max-height: 400px;
-  overflow-y: auto;
-}
-
-.notification-item {
-  cursor: pointer;
-  border-bottom: 1px solid #f8f9fa;
-
-  &.unread {
-    background: #f8f9ff;
-    border-left: 3px solid #007bff;
-  }
-
-  &:hover {
-    background: #f8f9fa;
-  }
-}
-
-.notification-content {
-  .notification-title {
-    font-weight: 600;
-    margin-bottom: 0.25rem;
-  }
-
-  .notification-message {
-    font-size: 0.875rem;
-    color: #6c757d;
-    margin-bottom: 0.25rem;
-  }
-
-  .notification-time {
-    font-size: 0.75rem;
-    color: #adb5bd;
-  }
 }
 
 .page-content {

@@ -97,18 +97,33 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/dashboard/appointments/Detail.vue'),
         meta: { roles: ['patient', 'doctor', 'admin'] },
       },
-      // {
-      //   path: 'medical-records',
-      //   name: 'medical-records',
-      //   component: () => import('@/views/dashboard/medical-records/List.vue'),
-      //   meta: { roles: ['patient', 'doctor'] },
-      // },
-      // {
-      //   path: 'medical-records/:id',
-      //   name: 'medical-record-detail',
-      //   component: () => import('@/views/dashboard/medical-records/Detail.vue'),
-      //   meta: { roles: ['patient', 'doctor'] },
-      // },
+      // Medical Records
+      {
+        path: 'medical-records',
+        name: 'medical-records',
+        component: () => import('@/views/dashboard/medical-records/List.vue'),
+        meta: { roles: ['patient', 'doctor', 'admin'] },
+      },
+      {
+        path: 'medical-records/create',
+        name: 'medical-record-create',
+        component: () => import('@/views/dashboard/medical-records/Create.vue'),
+        meta: { roles: ['doctor'] },
+      },
+      {
+        path: 'medical-records/:id',
+        name: 'medical-record-detail',
+        component: () => import('@/views/dashboard/medical-records/Detail.vue'),
+        meta: { roles: ['patient', 'doctor', 'admin'] },
+      },
+      // Notifications
+      {
+        path: 'notifications',
+        name: 'notifications',
+        component: () => import('@/views/dashboard/notifications/List.vue'),
+        meta: { roles: ['patient', 'doctor', 'admin'] },
+      },
+      // Billing
       {
         path: 'billing',
         name: 'billing',
@@ -140,13 +155,13 @@ const routes: RouteRecordRaw[] = [
       //   component: () => import('@/views/dashboard/schedule/Calendar.vue'),
       //   meta: { roles: ['doctor'] },
       // },
-      // // Rutas para admin
-      // {
-      //   path: 'admin/users',
-      //   name: 'admin-users',
-      //   component: () => import('@/views/dashboard/admin/Users.vue'),
-      //   meta: { roles: ['admin'] },
-      // },
+      // Rutas para admin
+      {
+        path: 'admin/users',
+        name: 'admin-users',
+        component: () => import('@/views/dashboard/admin/Users.vue'),
+        meta: { roles: ['admin'] },
+      },
       // {
       //   path: 'admin/clinics',
       //   name: 'admin-clinics',

@@ -11,7 +11,8 @@ export default defineConfig(({ mode }) => {
   const AUTH_TARGET = env.VITE_AUTH_SERVICE_TARGET || 'http://localhost:3001'
   const USERS_TARGET = env.VITE_USER_SERVICE_TARGET || 'http://localhost:3002'
   const APPOINTMENTS_TARGET = env.VITE_APPOINTMENT_SERVICE_TARGET || 'http://localhost:3003'
-  const NOTIFICATION_TARGET = env.VITE_NOTIFICATION_SERVICE_TARGET || 'http://localhost:3004'
+  const MEDICAL_RECORD_TARGET = env.VITE_MEDICAL_RECORD_SERVICE_TARGET || 'http://localhost:3004'
+  const NOTIFICATION_TARGET = env.VITE_NOTIFICATION_SERVICE_TARGET || 'http://localhost:3005'
   const BILLING_TARGET = env.VITE_BILLING_SERVICE_TARGET || 'http://localhost:3006'
   const SUBSCRIPTION_TARGET = env.VITE_SUBSCRIPTION_SERVICE_TARGET || 'http://localhost:3007'
 
@@ -48,12 +49,22 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           // mismos paths
         },
+        // Historias/Expedientes médicos
+        '/api/medical-record': {
+          target: MEDICAL_RECORD_TARGET,
+          changeOrigin: true,
+        },
         // Notificaciones
         '/api/notification': {
           target: NOTIFICATION_TARGET,
           changeOrigin: true,
         },
         // Facturación
+        '/api/billing': {
+          target: BILLING_TARGET,
+          changeOrigin: true,
+        },
+        // Compatibilidad con rutas antiguas (si existían)
         '/api/invoices': {
           target: BILLING_TARGET,
           changeOrigin: true,
@@ -67,6 +78,16 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
         },
         '/api/subscription': {
+          target: SUBSCRIPTION_TARGET,
+          changeOrigin: true,
+        },
+        // Planes de suscripción (público)
+        '/api/plans': {
+          target: SUBSCRIPTION_TARGET,
+          changeOrigin: true,
+        },
+        // Uso y límites de suscripción
+        '/api/usage': {
           target: SUBSCRIPTION_TARGET,
           changeOrigin: true,
         },

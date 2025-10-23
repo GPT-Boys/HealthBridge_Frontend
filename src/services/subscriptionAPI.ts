@@ -3,46 +3,56 @@ import type { Plan, Subscription, Usage, LimitCheck } from '@/types/subscription
 
 export const subscriptionAPI = {
   // Planes
-  getPlans: () => api.get<{ plans: Plan[] }>('http://localhost:3007/api/plans'),
+  // Público: lista de planes via Gateway/Proxy -> GET /api/plans
+  getPlans: () => api.get<{ plans: Plan[] }>('/plans'),
 
-  getPlan: (type: string) => api.get<{ plan: Plan }>('http://localhost:3007/api/plans/' + type),
+  // Público: detalle de plan -> GET /api/plans/:type
+  getPlan: (type: string) => api.get<{ plan: Plan }>(`/plans/${type}`),
 
   // Suscripciones
+  // GET /api/subscription/my-subscription
   getMySubscription: () =>
     api.get<{ subscription: Subscription; usage: Usage }>(
-      'http://localhost:3007/api/subscription/my-subscription',
+      '/subscription/my-subscription',
     ),
 
+  // POST /api/subscription
   createSubscription: (data: { planType: string; paymentMethod?: string }) =>
-    api.post<{ subscription: Subscription }>('http://localhost:3007/api/subscription', data),
+    api.post<{ subscription: Subscription }>('/subscription', data),
 
+  // POST /api/subscription/upgrade
   upgradeSubscription: (planType: string) =>
-    api.post<{ subscription: Subscription }>('http://localhost:3007/api/subscription/upgrade', {
+    api.post<{ subscription: Subscription }>('/subscription/upgrade', {
       planType,
     }),
 
+  // POST /api/subscription/downgrade
   downgradeSubscription: (planType: string) =>
-    api.post<{ subscription: Subscription }>('http://localhost:3007/api/subscription/downgrade', {
+    api.post<{ subscription: Subscription }>('/subscription/downgrade', {
       planType,
     }),
 
-  cancelSubscription: (reason?: string) =>
-    api.post<{ subscription: Subscription }>('http://localhost:3007/api/subscription/cancel', {
+  // POST /api/subscription/cancel
+  cancelSubscription: (reason?: string, feedback?: string) =>
+    api.post<{ subscription: Subscription }>('/subscription/cancel', {
       reason,
+      feedback,
     }),
 
+  // POST /api/subscription/checkout-session
   createCheckoutSession: (priceId: string) =>
     api.post<{ sessionId: string; url: string }>(
-      'http://localhost:3007/api/subscription/checkout-session',
+      '/subscription/checkout-session',
       { priceId },
     ),
 
   // Uso
-  getCurrentUsage: () => api.get<{ usage: Usage }>('http://localhost:3007/api/usage/current'),
+  // GET /api/usage/current
+  getCurrentUsage: () => api.get<{ usage: Usage }>('/usage/current'),
 
-  checkLimit: (feature: string) =>
-    api.get<LimitCheck>(`http://localhost:3007/api/usage/check/${feature}`),
+  // GET /api/usage/check/:feature
+  checkLimit: (feature: string) => api.get<LimitCheck>(`/usage/check/${feature}`),
 
-  trackUsage: (data: { type: string; value?: number }) =>
-    api.post('http://localhost:3007/api/usage/track', data),
+  // POST /api/usage/track
+  trackUsage: (data: { type: string; value?: number }) => api.post('/usage/track', data),
 }

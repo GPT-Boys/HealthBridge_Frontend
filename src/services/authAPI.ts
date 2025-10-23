@@ -19,21 +19,34 @@ export const authAPI = {
   // Verificar token
   verifyToken: () => api.post<{ valid: boolean; user: User }>('/auth/verify-token'),
 
-  // Refresh token
+  // Refresh token (con rotación automática)
   refreshToken: (refreshToken: string) =>
     api.post<{ accessToken: string; refreshToken: string }>('/auth/refresh-token', {
       refreshToken,
     }),
 
   // Logout
-  logout: (refreshToken: string) => api.post('/auth/logout', { refreshToken }),
+  logout: (refreshToken: string) => api.post<{ message: string }>('/auth/logout', { refreshToken }),
 
   // Logout de todos los dispositivos
-  logoutAll: () => api.post('/auth/logout-all'),
+  logoutAll: () => api.post<{ message: string }>('/auth/logout-all'),
 
-  // Obtener perfil
+  // Obtener perfil (vía auth service)
   getProfile: () => api.get<{ user: User }>('/auth/profile'),
 
+  // Forgot password - solicitar reset
+  forgotPassword: (email: string) =>
+    api.post<{ message: string }>('/auth/forgot-password', { email }),
+
+  // Reset password con token
+  resetPassword: (token: string, newPassword: string) =>
+    api.post<{ message: string }>('/auth/reset-password', { token, newPassword }),
+
+  // Cambiar contraseña (autenticado)
+  changePassword: (currentPassword: string, newPassword: string) =>
+    api.post<{ message: string }>('/auth/change-password', { currentPassword, newPassword }),
+
   // Health check
-  healthCheck: () => api.get('/health'),
+  healthCheck: () => api.get<{ service: string; status: string; time: string }>('/auth/health'),
 }
+

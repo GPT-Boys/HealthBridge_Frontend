@@ -321,12 +321,7 @@ const handleCancel = async () => {
       isProcessing.value = true
 
       // Prepare cancellation data
-      const cancellationData = {
-        reason: selectedReason.value,
-        feedback: feedback.value,
-      }
-
-      await subscriptionStore.cancel(JSON.stringify(cancellationData))
+      await subscriptionStore.cancel(selectedReason.value, feedback.value)
 
       // Success message
       await Swal.fire({
